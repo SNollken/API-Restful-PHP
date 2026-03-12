@@ -15,11 +15,12 @@ class ReportService
 
     public function getSalesSummary()
     {
-        $sales = $this->saleRepository->getAll();
+        $summary = $this->saleRepository->getSalesSummary();
+
         return [
-            'total_sales' => $sales->count(),
-            'total_revenue' => $sales->sum('total_amount'),
-            'average_sale_value' => $sales->avg('total_amount')
+            'total_sales' => (int) $summary->total_sales,
+            'total_revenue' => (float) $summary->total_revenue,
+            'average_sale_value' => (float) $summary->average_sale_value,
         ];
     }
 }

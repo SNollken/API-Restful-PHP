@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Sale;
 use App\Http\Requests\StoreSaleRequest;
 use App\Services\SaleService;
-use App\Repositories\SaleRepository;
 use App\Http\Resources\SaleResource;
 
 class SaleController extends Controller
@@ -20,12 +18,16 @@ class SaleController extends Controller
 
     public function index()
     {
+        $this->authorize('viewAny', Sale::class);
+
         $sales = $this->saleService->getAllSales();
         return SaleResource::collection($sales);
     }
 
     public function store(StoreSaleRequest $request)
     {
+        $this->authorize('create', Sale::class);
+
         $sale = $this->saleService->createSale($request->validated());
         return response()->json([
             "message" => "Sale created successfully!",
@@ -37,6 +39,7 @@ class SaleController extends Controller
     {
         $sale = $this->saleService->getSale($id);
         if ($sale) {
+            $this->authorize('view', $sale);
             return new SaleResource($sale);
         } else {
             return response()->json(["message" => "Sale not found"], 404);
@@ -45,8 +48,11 @@ class SaleController extends Controller
 
     public function destroy($id)
     {
-        $deleted = $this->saleService->cancelSale($id);
-        if ($deleted) {
+        $sale = $this->saleService->getSale($id);
+        if ($sale) {
+            $this->authorize('delete', $sale);
+
+            $this->saleService->cancelSale($id);
             return response()->json(["message" => "Sale cancelled successfully!"], 202);
         } else {
             return response()->json(["message" => "Sale not found"], 404);

@@ -26,7 +26,7 @@ class SaleRepository
             ]);
         }
         
-        return $sale;
+        return $sale->load('saleItems.product');
     }
 
     public function find($id)
@@ -34,12 +34,24 @@ class SaleRepository
         return Sale::with('saleItems.product')->find($id);
     }
 
-    public function delete($id)
+    public function cancel(Sale $sale)
     {
-        $sale = Sale::find($id);
-        if ($sale) {
-            return $sale->delete();
-        }
-        return false;
+        $sale->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+        ]);
+
+        return $sale->fresh('saleItems.product');
+    }
+
+    public function getSalesSummary()
+    {
+        return Sale::where('status', 'completed')
+            ->selectRaw(
+                'COUNT(*) as total_sales, ' .
+                'COALESCE(SUM(total_amount), 0) as total_revenue, ' .
+                'COALESCE(AVG(total_amount), 0) as average_sale_value'
+            )
+            ->first();
     }
 }

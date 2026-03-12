@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use App\Exceptions\InsufficientStockException;
+use App\Exceptions\SaleAlreadyCancelledException;
 
 class Handler extends ExceptionHandler
 {
@@ -45,6 +47,20 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (InsufficientStockException $e, $request) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'errors' => $e->context(),
+            ], 409);
+        });
+
+        $this->renderable(function (SaleAlreadyCancelledException $e, $request) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'errors' => $e->context(),
+            ], 409);
         });
     }
 }

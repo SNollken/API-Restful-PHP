@@ -27,7 +27,7 @@ class SaleTest extends TestCase
         $product = Product::factory()->create(['stock' => 10]);
         
         $saleData = [
-            'total_amount' => 99.99,
+            'total_amount' => 999.99,
             'items' => [
                 [
                     'product_id' => $product->id,
@@ -49,7 +49,7 @@ class SaleTest extends TestCase
                      ]
                  ]);
 
-        $this->assertDatabaseHas('sales', ['total_amount' => 99.99]);
+        $this->assertDatabaseHas('sales', ['total_amount' => 99.98]);
         $this->assertDatabaseHas('sale_items', ['product_id' => $product->id, 'quantity' => 2]);
         $this->assertEquals(8, $product->fresh()->stock);
     }
@@ -72,7 +72,7 @@ class SaleTest extends TestCase
 
         $response = $this->postJson('/api/v1/sales', $saleData);
 
-        $response->assertStatus(500);
+        $response->assertStatus(409);
         $this->assertDatabaseMissing('sales', ['total_amount' => 99.99]);
     }
 
@@ -99,7 +99,7 @@ class SaleTest extends TestCase
 
         $response = $this->postJson('/api/v1/sales', $saleData);
 
-        $response->assertStatus(500);
+        $response->assertStatus(422);
         $this->assertDatabaseMissing('sales', ['total_amount' => 99.99]);
         $this->assertEquals(10, $product->fresh()->stock);
     }
@@ -149,7 +149,7 @@ class SaleTest extends TestCase
                      'message' => 'Sale cancelled successfully!'
                  ]);
 
-        $this->assertDatabaseMissing('sales', ['id' => $sale->id]);
+        $this->assertDatabaseHas('sales', ['id' => $sale->id, 'status' => 'cancelled']);
         $this->assertEquals(12, $product->fresh()->stock);
     }
 }

@@ -7,7 +7,22 @@ use App\Models\Sale;
 
 class SalePolicy
 {
-    public function cancel(User $user, Sale $sale)
+    public function viewAny(User $user)
+    {
+        return $user->tokenCan('manage-sales');
+    }
+
+    public function view(User $user, Sale $sale)
+    {
+        return $user->tokenCan('manage-sales');
+    }
+
+    public function create(User $user)
+    {
+        return $user->tokenCan('manage-sales');
+    }
+
+    public function delete(User $user, Sale $sale)
     {
         return $user->tokenCan('manage-sales');
     }

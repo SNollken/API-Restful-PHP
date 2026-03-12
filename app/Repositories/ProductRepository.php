@@ -21,6 +21,11 @@ class ProductRepository
         return Product::find($id);
     }
 
+    public function findForUpdate($id)
+    {
+        return Product::where('id', $id)->lockForUpdate()->first();
+    }
+
     public function update($id, array $data)
     {
         $product = Product::find($id);

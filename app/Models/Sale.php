@@ -9,7 +9,11 @@ class Sale extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['total_amount', 'status'];
+    protected $fillable = ['total_amount', 'status', 'cancelled_at'];
+
+    protected $casts = [
+        'cancelled_at' => 'datetime',
+    ];
 
     public function saleItems()
     {

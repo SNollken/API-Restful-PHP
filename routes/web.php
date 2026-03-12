@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -12,4 +11,3 @@ Route::get('/generate-csrf-token', function () {
         'csrf_token' => csrf_token()
     ]);
 });
-
