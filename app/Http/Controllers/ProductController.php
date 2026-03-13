@@ -19,16 +19,12 @@ class ProductController extends Controller
 
     public function index()
     {
-        $this->authorize('viewAny', Product::class);
-
         $products = $this->productService->getAllProducts();
         return ProductResource::collection($products);
     }
 
     public function store(StoreProductRequest $request)
     {
-        $this->authorize('create', Product::class);
-
         $product = $this->productService->createProduct($request->validated());
         return response()->json([
             "message" => "Product created successfully!",
@@ -40,7 +36,6 @@ class ProductController extends Controller
     {
         $product = $this->productService->getProduct($id);
         if ($product) {
-            $this->authorize('view', $product);
             return new ProductResource($product);
         } else {
             return response()->json(["message" => "Product not found"], 404);
@@ -51,8 +46,6 @@ class ProductController extends Controller
     {
         $product = $this->productService->getProduct($id);
         if ($product) {
-            $this->authorize('update', $product);
-
             $product = $this->productService->updateProduct($id, $request->validated());
             return response()->json([
                 "message" => "Product updated successfully!",
@@ -67,8 +60,6 @@ class ProductController extends Controller
     {
         $product = $this->productService->getProduct($id);
         if ($product) {
-            $this->authorize('delete', $product);
-
             $this->productService->deleteProduct($id);
             return response()->json(["message" => "Product deleted successfully!"], 202);
         } else {
